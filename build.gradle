@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.20'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public/' }
+    mavenCentral()
+}
+
+//重新定义MANIFEST.MF
+jar {
+    manifest {
+        attributes 'Can-Redefine-Classes': true
+        attributes 'Can-Retransform-Classes': true
+//        attributes 'Agent-Class': 'com.agmtopy.source.agent.AgentExampleDemo'
+//        attributes 'Premain-Class': 'com.agmtopy.source.agent.AgentExampleDemo'
+        attributes 'Premain-Class': 'com.agmtopy.source.agent.AgentExampleForByteBuddy'
+    }
+}
+
+dependencies {
+    api "net.bytebuddy:byte-buddy:1.11.6"
+    api "net.bytebuddy:byte-buddy-agent:1.11.6"
+    api "org.javassist:javassist:3.28.0-GA"
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
