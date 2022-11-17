@@ -15,22 +15,22 @@ public class AgentExampleForByteBuddy {
 
     @Advice.OnMethodEnter
     public static boolean before(@Advice.Origin Executable method) {
-        System.out.println("[C] >> " + method);
+        System.out.println("byte buddy before : " + method);
         return true;
     }
 
     @Advice.OnMethodExit
     public static void after(@Advice.Origin Executable method) {
-        System.out.println("[C] << " + method);
+        System.out.println("byte buddy after : " + method);
     }
 
-    public static void premain(String arguments, Instrumentation inst) {
+    public static void premain(String arguments, Instrumentation instrumentation) {
         System.out.println("开始执行...");
         new AgentBuilder.Default()
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(AgentBuilder.InstallationListener.StreamWriting.toSystemError())
                 .type(ElementMatchers.nameContains("AgentTarget"))
                 .transform((builder, td, cl, m) -> builder.visit(Advice.to(AgentExampleForByteBuddy.class).on(MethodDescription::isConstructor)))
-                .installOn(inst);
+                .installOn(instrumentation);
     }
 }

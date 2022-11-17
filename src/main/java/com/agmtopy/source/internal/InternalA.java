@@ -1,10 +1,16 @@
 package com.agmtopy.source.internal;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+
+
+
 public class InternalA {
 
-    protected String name;
+    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
-    protected String iString(){
-        return this.getClass().getSimpleName();
+    public static void main(String[] args) {
+
     }
 }

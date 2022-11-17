@@ -27,7 +27,8 @@ dependencies {
     api "net.bytebuddy:byte-buddy-agent:1.11.6"
     api "org.javassist:javassist:3.28.0-GA"
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-
+    implementation "org.redisson:redisson:3.17.7"
+    implementation group: 'com.buession.springboot', name: 'buession-springboot-boot', version: '2.1.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
