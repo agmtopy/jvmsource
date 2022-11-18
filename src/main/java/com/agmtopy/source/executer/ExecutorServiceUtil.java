@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 
 public class ExecutorServiceUtil {
 
-    private static final int taskNum = 100000;
+    private static final int taskNum = 10000;
     private static final LinkedBlockingQueue QUEUE = new LinkedBlockingQueue(taskNum + 10000);
 
     private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS,
@@ -16,7 +16,7 @@ public class ExecutorServiceUtil {
 
     public static void main(String[] args) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(taskNum);
-        for (int i = 8; i <= 32768; i = i * 2) {
+        for (int i = 8; i <= 128; i = i * 2) {
             System.out.printf("线程数量为[%s]正在执行... %n", i);
             threadPoolExecutor.setMaximumPoolSize(i);
             threadPoolExecutor.setCorePoolSize(i);
@@ -31,9 +31,7 @@ public class ExecutorServiceUtil {
     }
 
     private static void extracted(CountDownLatch latch) {
-        IntStream.range(0, taskNum).forEach(i -> {
-            threadPoolExecutor.submit(new Task(latch, i));
-        });
+        IntStream.range(0, taskNum).forEach(i -> threadPoolExecutor.submit(new Task(latch, i)));
     }
 
     static class Task implements Runnable {
