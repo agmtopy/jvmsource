@@ -14,24 +14,22 @@ public class ExecutorServiceUtil2 {
             TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(TASK_SIZE + 2048), new ThreadPoolExecutor.AbortPolicy());
 
     public static void main(String[] args) throws InterruptedException {
-        for (int i = 8; i <= 128; i = i * 2) {
-            long l = execute(i);
-            System.out.printf("线程数量为[%s]执行耗时[%s]ms %n", i, l);
+        for (int i = 8; i <= 8192; i = i * 2) {
+            CountDownLatch latch = new CountDownLatch(TASK_SIZE);
+            long st = System.currentTimeMillis();
+            execute(i, latch);
+            latch.await();
+            long et = System.currentTimeMillis();
+            System.out.printf("线程数量为[%s]执行耗时[%s]ms %n", i, et - st);
             System.out.printf("线程池信息为[%s] %n", THREAD_POOL_EXECUTOR);
         }
         THREAD_POOL_EXECUTOR.shutdown();
     }
 
-    private static long execute(int coreSize) throws InterruptedException {
+    private static void execute(int coreSize, CountDownLatch latch) throws InterruptedException {
         THREAD_POOL_EXECUTOR.setMaximumPoolSize(coreSize);
         THREAD_POOL_EXECUTOR.setCorePoolSize(coreSize);
-        CountDownLatch latch = new CountDownLatch(TASK_SIZE);
-
-        long st = System.currentTimeMillis();
         IntStream.range(0, TASK_SIZE).forEach(i -> THREAD_POOL_EXECUTOR.submit(new ExecutorServiceUtil.Task(latch, i)));
-        latch.await();
-        long et = System.currentTimeMillis();
-        return et - st;
     }
 
 }

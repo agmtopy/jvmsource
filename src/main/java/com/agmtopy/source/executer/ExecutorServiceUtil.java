@@ -8,15 +8,14 @@ import java.util.stream.IntStream;
 
 public class ExecutorServiceUtil {
 
-    private static final int taskNum = 10000;
-    private static final LinkedBlockingQueue QUEUE = new LinkedBlockingQueue(taskNum + 10000);
+    private static final int taskNum = 1000000;
 
     private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS,
-            QUEUE);
+            new LinkedBlockingQueue<>(taskNum + 2048));
 
     public static void main(String[] args) throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(taskNum);
-        for (int i = 8; i <= 128; i = i * 2) {
+        for (int i = 8; i <= 16384; i = i * 2) {
+            CountDownLatch latch = new CountDownLatch(taskNum);
             System.out.printf("线程数量为[%s]正在执行... %n", i);
             threadPoolExecutor.setMaximumPoolSize(i);
             threadPoolExecutor.setCorePoolSize(i);
@@ -25,7 +24,6 @@ public class ExecutorServiceUtil {
             latch.await();
             long et = System.currentTimeMillis();
             System.out.printf("线程数量为[%s]执行耗时[%s]ms %n", i, et - st);
-            QUEUE.clear();
         }
         threadPoolExecutor.shutdown();
     }
@@ -46,17 +44,19 @@ public class ExecutorServiceUtil {
 
         @Override
         public void run() {
-//            long st = System.currentTimeMillis();
             doExecute();
-//            long et = System.currentTimeMillis();
-//            System.out.printf("线程[%s]执行任务Id[%s],耗时[%s]ms %n", Thread.currentThread().getName(), taskId, et - st);
-            latch.countDown();
+            try {
+                TimeUnit.MICROSECONDS.sleep(1);
+                latch.countDown();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     public static void doExecute() {
         int min = 0;
-        int max = 100000;
+        int max = 1000;
         for (int i = min; i <= max; i++) {
             isPrime2(i);
         }
